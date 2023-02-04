@@ -1,0 +1,28 @@
+{
+  "name": "hackhathon-multisender",
+  "version": "1.0.0",
+  "description": "A tool for multisending crypto",
+  "main": "index.js",
+  "scripts": {
+    "start": "parcel serve index.html --no-cache --open",
+    "build": "parcel build index.html --no-cache"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/divesresearch/multisender.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/divesresearch/multisender/issues"
+  },
+  "homepage": "https://github.com/divesresearch/multisender#readme",
+  "devDependencies": {
+    "parcel": "^2.8.3",
+    "process": "^0.11.10"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  }
+}
