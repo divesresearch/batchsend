@@ -30,6 +30,9 @@ const
                     .balanceOf(await this.getAddress())
             },
 
+            getTokenDecimals: (tokenAddress) =>
+                (new ethers.Contract(tokenAddress, ERC20TokenABI, signer)).decimals(),
+
             approveAccount: ({
                 tokenAddress,
                 spenderAddress,
