@@ -1,11 +1,13 @@
 const React = require('react'),
-    {useState} = require('react'),
+    {useState, useEffect} = require('react'),
     {createRoot} = require('react-dom/client'),
+    createEthersAdapter = require('./ethersAdapter'),
     
     App = () => {
-        const [wallet, setWallet] = useState('Connect Wallet')
-        const [tokenAdress, setTokenAdress] = useState(false)
-        const [balance, setBalance] = useState(null)
+        const [walletAddress, setWalletAddress] = useState(null)
+        const [tokenAddress, setTokenAddress] = useState(null)
+        const [walletBalance, setWalletBalance] = useState(null)
+
 
    
         const connectWallet = async () => {
@@ -13,15 +15,30 @@ const React = require('react'),
                 window.ethereum
                     .request({method: 'eth_requestAccounts'})
                     .then((res) => {
-                        setWallet(res)
+                        setWalletAddress(res)
                     })
+
             }
         }
+        
+        useEffect(()=>{
+            console.log(tokenAddress);
+        },[tokenAddress])
+
+        const testFn = async () => {
+            const 
+                ethersAdapter = await createEthersAdapter(window.ethereum)
+                console.log(chainID)
+            await ethersAdapter.getAllowanceAmountForBatchSender(tokenAddress,
+            ).then((x) => console.log(x.toString()))
+            console.log(chainID)
+        }
+
         return (
             <>
                 <nav>
                     <button onClick={connectWallet} className="mm-button">
-                        {wallet}
+                        {walletAddress ? walletAddress : 'Connect Wallet' }
                     </button>
                 </nav>
                 <div className="app-main flex">
@@ -30,9 +47,8 @@ const React = require('react'),
                             <div className='flex flex-span'>
                                 <span>Token Address</span>
 
-                                {/* TODO:Token'ın balance'ı çekilecek ethers ile */}
-                                { tokenAdress&&
-                                <span>{`Balance: ${balance}`} </span>}
+                                { tokenAddress&&
+                                <span>{`Balance: ${walletBalance}`} </span>}
 
                             </div>
                             <input 
@@ -41,7 +57,7 @@ const React = require('react'),
                                 autoComplete="off"
                                 placeholder='0x..' 
                                 onChange={(e)=> 
-                                {setTokenAdress(e.target.value)}} />
+                                {setTokenAddress(e.target.value)}} />
                         </form>
                     </div>
                     <div className='flex csv-box'>
@@ -52,7 +68,9 @@ const React = require('react'),
                                 "0x83d0700d29854AAB1fB42165F97df4960dd82CA5, 0.3
                                 &#10;ignatyus, 10"/>
                     </div>
-                    <button className='continue' >Continue</button>
+                    <button 
+                        className='continue'
+                        onClick={testFn} >Continue</button>
                 </div>
             </>
         )
