@@ -2,13 +2,14 @@ const React = require('react'),
     {useState,useEffect} = require('react'),
     {createRoot} = require('react-dom/client'),
     createEthersAdapter = require('./ethersAdapter'),
+    {csvTextToBatchSendArgument} = require('./utils'),
 
     App = () => {
         const [walletAddress, setWalletAddress] = useState(null)
         const [tokenAddress, setTokenAddress] = useState(null)
         const [walletBalance, setWalletBalance] = useState(null)
         const [allowance, setAllowance] = useState(null)
-        const [csvText, setCsvText] = useState(null)
+        const [csvText, setCSVText] = useState(null)
 
         const connectWallet = async () => {
             if (window.ethereum) {
@@ -42,7 +43,7 @@ const React = require('react'),
 
             setWalletBalance(
                 (parseInt(balance) / Math.pow(10, decimals))
-                    .toString()
+                    .toString(),
             )
         }
 
@@ -51,13 +52,13 @@ const React = require('react'),
                 ethersAdapter = await createEthersAdapter(window.ethereum)
 
             await ethersAdapter
-                    .getAllowanceAmountForBatchSender(tokenAddress)
-                    .then((x) => setAllowance(x.toString()))
+                .getAllowanceAmountForBatchSender(tokenAddress)
+                .then((x) => setAllowance(x.toString()))
         }
 
         const approveAllowance = async () => {
             const
-                ethersAdapter = await createEthersAdapter(window.ethereum)
+                ethersAdapter = await createEthersAdapter(window.ethereum),
 
                 tx = await ethersAdapter.approveBatchSender(tokenAddress)
 
@@ -68,12 +69,18 @@ const React = require('react'),
 
         const batchSendToken = async () => {
             const
-                ethersAdapter = await createEthersAdapter(window.ethereum)
+                ethersAdapter = await createEthersAdapter(window.ethereum),
+
+                decimals = await ethersAdapter.getTokenDecimals(tokenAddress),
+
+                batchSendTokenArgument =
+                    csvTextToBatchSendArgument(decimals, csvText)
+
+            console.log(batchSendTokenArgument)
 
             await ethersAdapter.batchSendToken({
                 tokenAddress,
-                recipients: csvText.recipients,
-                amounts: csvText.amounts
+                ...batchSendTokenArgument,
             })
         }
 
@@ -114,7 +121,9 @@ const React = require('react'),
                             id='csv'
                             placeholder=
                                 "0x83d0700d29854AAB1fB42165F97df4960dd82CA5, 0.3
-                                &#10;ignatyus, 10"/>
+                                &#10;ignatyus, 10"
+                            onChange={(e) => setCSVText(e.target.value)}
+                        />
                     </div>
                     <button
                         className='continue'
