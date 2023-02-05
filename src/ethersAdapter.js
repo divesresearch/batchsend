@@ -1,17 +1,24 @@
 const
     {ethers} = require('ethers'),
 
-    {ERC20TokenABI} = require('./contracts'),
+    {
+        configsByChainID,
+        BatchSenderABI,
+        ERC20TokenABI,
+    } = require('./contracts'),
 
-    createEthersAdapter = (sourceProvider) => {
+    createEthersAdapter = async (sourceProvider) => {
         const
             provider = new ethers.providers.Web3Provider(sourceProvider),
-            signer = provider.getSigner()
+            signer = provider.getSigner(),
+            chainID = await provider.getNetwork(),
+
+            {batchSenderAddress} = configsByChainID[chainID]
 
         return ({
             getAddress: () => signer.getAddress(),
 
-            getTokenBalance: async function(tokenAddress){
+            getBalanceForToken: async function(tokenAddress){
                 new ethers.Contract(
                     tokenAddress,
                     ERC20TokenABI,
@@ -36,7 +43,7 @@ const
 
             getAllowanceAmount: ({
                 tokenAddress,
-                ownerAddress,
+                ownerAddress, // TODO: remove this
                 spenderAddress,
             }) => {
                 const
@@ -46,8 +53,53 @@ const
                 return tokenContract.allowance(ownerAddress, spenderAddress)
             },
 
-            batchSend: () => {}, // TODO: Implement this
-            batchSendToken: () => {} // TODO: Implement this
+            approveBatchSender: function (tokenAddress){
+                return this.approveAccount({
+                    tokenAddress,
+                    spenderAddress: batchSenderAddress,
+                })
+            },
+
+            batchSend: ({
+                recipients,
+                amounts,
+            }) => {
+                const
+                    batchSenderContract =
+                        new ethers.Contract(
+                            batchSenderAddress,
+                            BatchSenderABI,
+                            signer,
+                        ),
+
+                    // FIXME: use bignumber instead
+                    totalAmount = amounts.reduce((a,b) => a+b)
+
+                return batchSenderContract
+                    .batchSend(
+                        recipients,
+                        amounts,
+                        {value: totalAmount}
+                    )
+            },
+
+            batchSendToken: ({
+                tokenAddress,
+                recipients,
+                amounts,
+            }) => {
+                const
+                    batchSenderContract =
+                        new ethers.Contract(
+                            batchSenderAddress,
+                            BatchSenderABI,
+                            signer,
+                        )
+
+                return batchSenderContract
+                    .batchSendToken(tokenAddress, recipients, amounts)
+
+            },
         })
     }
 

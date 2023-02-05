@@ -1,6 +1,8 @@
 module.exports = {
-    BatchSenderAddressMapByChainID : {
-        '5' : '0x3262630A9744f84AA2F412BD41fc37fD86a3e25C' // goerli
+    configsByChainID: {
+        5: {
+            batchSenderAddress: '0x3262630A9744f84AA2F412BD41fc37fD86a3e25C'
+        }
     },
 
     BatchSenderABI : [
