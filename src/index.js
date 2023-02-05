@@ -1,12 +1,14 @@
 const React = require('react'),
-    {useState, useEffect} = require('react'),
+    {useState,useEffect} = require('react'),
     {createRoot} = require('react-dom/client'),
     createEthersAdapter = require('./ethersAdapter'),
+
     
     App = () => {
         const [walletAddress, setWalletAddress] = useState(null)
         const [tokenAddress, setTokenAddress] = useState(null)
         const [walletBalance, setWalletBalance] = useState(null)
+        const [allowance, setAllowance] = useState(null)
 
 
    
@@ -22,16 +24,15 @@ const React = require('react'),
         }
         
         useEffect(()=>{
-            console.log(tokenAddress);
-        },[tokenAddress])
+            if (tokenAddress, walletAddress){
+                checkAllowance()}
+        },[tokenAddress, walletAddress, allowance])
 
-        const testFn = async () => {
+        const checkAllowance = async () => {
             const 
                 ethersAdapter = await createEthersAdapter(window.ethereum)
-                console.log(chainID)
             await ethersAdapter.getAllowanceAmountForBatchSender(tokenAddress,
-            ).then((x) => console.log(x.toString()))
-            console.log(chainID)
+            ).then((x) => setAllowance(x.toString()))
         }
 
         return (
@@ -70,7 +71,7 @@ const React = require('react'),
                     </div>
                     <button 
                         className='continue'
-                        onClick={testFn} >Continue</button>
+                        onClick={checkAllowance} >Continue</button>
                 </div>
             </>
         )
