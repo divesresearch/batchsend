@@ -2,6 +2,10 @@ module.exports = {
     configsByChainID: {
         5: {
             batchSenderAddress: '0x3262630A9744f84AA2F412BD41fc37fD86a3e25C'
+        },
+
+        3141: {
+            batchSenderAddress: '0xEAD90aAE3C8800Bda9C1ea084E826110AC0A9ae6'
         }
     },
 
