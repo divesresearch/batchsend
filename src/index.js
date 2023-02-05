@@ -9,6 +9,7 @@ const React = require('react'),
         const [tokenAddress, setTokenAddress] = useState(null)
         const [walletBalance, setWalletBalance] = useState(null)
         const [allowance, setAllowance] = useState(null)
+        const [csvText, setCsvText] = useState(null)
 
 
    
@@ -25,14 +26,40 @@ const React = require('react'),
         
         useEffect(()=>{
             if (tokenAddress, walletAddress){
-                checkAllowance()}
+                checkAllowance()
+                checkBalanceForToken()}
         },[tokenAddress, walletAddress, allowance])
 
+
+        const checkBalanceForToken = async () => {
+            const 
+                ethersAdapter = await createEthersAdapter(window.ethereum)
+            await ethersAdapter.getBalanceForToken(tokenAddress,
+            ).then((x) => setWalletBalance(x))
+        }
         const checkAllowance = async () => {
             const 
                 ethersAdapter = await createEthersAdapter(window.ethereum)
             await ethersAdapter.getAllowanceAmountForBatchSender(tokenAddress,
             ).then((x) => setAllowance(x.toString()))
+        }
+
+        const approveAllowance = async () => {
+            const 
+                ethersAdapter = await createEthersAdapter(window.ethereum)
+            await ethersAdapter.approveBatchSender(tokenAddress,
+            )
+        }
+        const batchSendToken = async () => {
+            const 
+                ethersAdapter = await createEthersAdapter(window.ethereum)
+            await ethersAdapter.batchSendToken(
+                tokenAddress, csvText.recipients, csvText.amounts)
+        }
+
+        const executeTx = () => {
+            if (allowance>0) return batchSendToken()
+            else return approveAllowance()
         }
 
         return (
@@ -71,7 +98,11 @@ const React = require('react'),
                     </div>
                     <button 
                         className='continue'
-                        onClick={checkAllowance} >Continue</button>
+                        onClick={executeTx}>
+                        {(allowance) ? 
+                            (allowance > 0) ? 'Continue' : 'Approve' 
+                            : 'Continue' }
+                    </button>
                 </div>
             </>
         )
