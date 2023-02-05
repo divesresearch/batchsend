@@ -53,6 +53,14 @@ const
                 return tokenContract.allowance(ownerAddress, spenderAddress)
             },
 
+            getAllowanceAmountForBatchSender: async function (tokenAddress){
+                return this.getAllowanceAmount({
+                    tokenAddress,
+                    ownerAddress: (await signer.getAddress()),
+                    spenderAddress: batchSenderAddress,
+                })
+            },
+
             approveBatchSender: function (tokenAddress){
                 return this.approveAccount({
                     tokenAddress,
@@ -79,7 +87,7 @@ const
                     .batchSend(
                         recipients,
                         amounts,
-                        {value: totalAmount}
+                        {value: totalAmount},
                     )
             },
 
