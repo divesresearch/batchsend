@@ -5,13 +5,9 @@ const React = require('react'),
     App = () => {
         const [wallet, setWallet] = useState('Connect Wallet')
         const [tokenAdress, setTokenAdress] = useState(false)
-        const [checked, setChecked] = useState(false)
         const [balance, setBalance] = useState(0)
 
-        const handleChange = () => {
-            setChecked(!checked)
-        }
-
+   
         const connectWallet = async () => {
             if (window.ethereum) {
                 window.ethereum
@@ -47,15 +43,6 @@ const React = require('react'),
                                 onChange={(e)=> 
                                 {setTokenAdress(e.target.value)}} />
                         </form>
-                        <div className='flex checkbox-box' >   
-                            <label htmlFor='checkDef' >Deflationary</label>
-                            <input
-                                id='checkDef'
-                                type="checkbox"
-                                checked={checked}
-                                onChange={handleChange}
-                            /> 
-                        </div>
                     </div>
                     <div className='flex csv-box'>
                         <label > List of Addresses in CSV</label>
