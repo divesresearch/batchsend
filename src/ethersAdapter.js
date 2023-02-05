@@ -1,5 +1,5 @@
 const
-    {ethers} = require('ethers'),
+    {ethers, BigNumber} = require('ethers'),
 
     {
         configsByChainID,
@@ -11,9 +11,12 @@ const
         const
             provider = new ethers.providers.Web3Provider(sourceProvider),
             signer = provider.getSigner(),
-            chainID = await provider.getNetwork(),
+            {chainId} = await provider.getNetwork(),
 
-            {batchSenderAddress} = configsByChainID[chainID]
+            batchSenderAddress = configsByChainID[chainId]?.batchSenderAddress
+
+        if(!batchSenderAddress)
+            throw {msg: 'Selected network is not supported yet.'}
 
         return ({
             getAddress: () => signer.getAddress(),
@@ -80,14 +83,16 @@ const
                             signer,
                         ),
 
-                    // FIXME: use bignumber instead
-                    totalAmount = amounts.reduce((a,b) => a+b)
+                    totalAmount = amounts.reduce(
+                        (a,b) =>
+                            BigNumber.from(a).add(b)
+                    )
 
                 return batchSenderContract
                     .batchSend(
                         recipients,
                         amounts,
-                        {value: totalAmount},
+                        {value: totalAmount.toString()},
                     )
             },
 
