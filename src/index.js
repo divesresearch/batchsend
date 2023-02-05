@@ -5,7 +5,7 @@ const React = require('react'),
     App = () => {
         const [wallet, setWallet] = useState('Connect Wallet')
         const [tokenAdress, setTokenAdress] = useState(false)
-        const [balance, setBalance] = useState(0)
+        const [balance, setBalance] = useState(null)
 
    
         const connectWallet = async () => {
