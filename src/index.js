@@ -3,7 +3,6 @@ const React = require('react'),
     {createRoot} = require('react-dom/client'),
     createEthersAdapter = require('./ethersAdapter'),
 
-    
     App = () => {
         const [walletAddress, setWalletAddress] = useState(null)
         const [tokenAddress, setTokenAddress] = useState(null)
@@ -11,8 +10,6 @@ const React = require('react'),
         const [allowance, setAllowance] = useState(null)
         const [csvText, setCsvText] = useState(null)
 
-
-   
         const connectWallet = async () => {
             if (window.ethereum) {
                 window.ethereum
@@ -20,41 +17,64 @@ const React = require('react'),
                     .then((res) => {
                         setWalletAddress(res)
                     })
-
             }
         }
-        
+
         useEffect(()=>{
             if (tokenAddress, walletAddress){
                 checkAllowance()
-                checkBalanceForToken()}
+                checkBalanceForToken()
+            }
         },[tokenAddress, walletAddress, allowance])
 
 
         const checkBalanceForToken = async () => {
-            const 
-                ethersAdapter = await createEthersAdapter(window.ethereum)
-            await ethersAdapter.getBalanceForToken(tokenAddress,
-            ).then((x) => setWalletBalance(x))
+            const
+                ethersAdapter =
+                    await createEthersAdapter(window.ethereum),
+
+                decimals =
+                    await ethersAdapter.getTokenDecimals(tokenAddress),
+
+
+                balance = await ethersAdapter
+                    .getBalanceForToken(tokenAddress)
+
+            setWalletBalance(
+                (parseInt(balance) / Math.pow(10, decimals))
+                    .toString()
+            )
         }
+
         const checkAllowance = async () => {
-            const 
+            const
                 ethersAdapter = await createEthersAdapter(window.ethereum)
-            await ethersAdapter.getAllowanceAmountForBatchSender(tokenAddress,
-            ).then((x) => setAllowance(x.toString()))
+
+            await ethersAdapter
+                    .getAllowanceAmountForBatchSender(tokenAddress)
+                    .then((x) => setAllowance(x.toString()))
         }
 
         const approveAllowance = async () => {
-            const 
+            const
                 ethersAdapter = await createEthersAdapter(window.ethereum)
-            await ethersAdapter.approveBatchSender(tokenAddress,
-            )
+
+                tx = await ethersAdapter.approveBatchSender(tokenAddress)
+
+            await tx.wait()
+
+            checkAllowance()
         }
+
         const batchSendToken = async () => {
-            const 
+            const
                 ethersAdapter = await createEthersAdapter(window.ethereum)
-            await ethersAdapter.batchSendToken(
-                tokenAddress, csvText.recipients, csvText.amounts)
+
+            await ethersAdapter.batchSendToken({
+                tokenAddress,
+                recipients: csvText.recipients,
+                amounts: csvText.amounts
+            })
         }
 
         const executeTx = () => {
@@ -96,12 +116,16 @@ const React = require('react'),
                                 "0x83d0700d29854AAB1fB42165F97df4960dd82CA5, 0.3
                                 &#10;ignatyus, 10"/>
                     </div>
-                    <button 
+                    <button
                         className='continue'
                         onClick={executeTx}>
-                        {(allowance) ? 
-                            (allowance > 0) ? 'Continue' : 'Approve' 
-                            : 'Continue' }
+                        {
+                            (allowance)
+                                ? (allowance > 0
+                                    ? 'Continue'
+                                    : 'Approve')
+                                : 'Continue'
+                        }
                     </button>
                 </div>
             </>
