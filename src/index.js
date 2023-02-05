@@ -1,26 +1,47 @@
-const React = require('react'),
+const
+    React = require('react'),
     {useState} = require('react'),
     {createRoot} = require('react-dom/client'),
-    
+
+    createEthersAdapter = require('./ethersAdapter'),
+
     App = () => {
-        const [wallet, setWallet] = useState('Connect Wallet')
-        const [tokenAdress, setTokenAdress] = useState(false)
-        const [checked, setChecked] = useState(false)
-        const [balance, setBalance] = useState(0)
+        const
+            [wallet, setWallet] = useState('Connect Wallet'),
+            [tokenAdress, setTokenAdress] = useState(false),
+            [checked, setChecked] = useState(false),
+            [balance, setBalance] = useState(0),
 
-        const handleChange = () => {
-            setChecked(!checked)
-        }
+            handleChange = () => {
+                setChecked(!checked)
+            },
 
-        const connectWallet = async () => {
-            if (window.ethereum) {
-                window.ethereum
-                    .request({method: 'eth_requestAccounts'})
-                    .then((res) => {
-                        setWallet(res)
+            connectWallet = async () => {
+                if (window.ethereum) {
+                    window.ethereum
+                        .request({method: 'eth_requestAccounts'})
+                        .then((res) => {
+                            setWallet(res)
+                        })
+                }
+            },
+
+            testFn = async () => {
+                const
+                    ethersAdapter = createEthersAdapter(window.ethereum)
+
+                    await ethersAdapter.approveAccount({
+                        tokenAddress: '0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6',
+                        spenderAddress: '0x1d6D0574f4347bC79D743dedc7e63b7B3b76B856'
                     })
+
+                    ethersAdapter.getAllowanceAmount({
+                        tokenAddress: '0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6',
+                        ownerAddress: await ethersAdapter.getAddress(),
+                        spenderAddress: '0x1d6D0574f4347bC79D743dedc7e63b7B3b76B856',
+                    }).then((x) => console.log(x.toString()))
             }
-        }
+
         return (
             <>
                 <nav>
@@ -65,7 +86,10 @@ const React = require('react'),
                                 "0x83d0700d29854AAB1fB42165F97df4960dd82CA5, 0.3
                                 &#10;ignatyus, 10"/>
                     </div>
-                    <button className='continue' >Continue</button>
+                    <button
+                        className='continue'
+                        onClick={testFn}
+                    >Continue</button>
                 </div>
             </>
         )

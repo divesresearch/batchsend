@@ -11,7 +11,7 @@ const
         return ({
             getAddress: () => signer.getAddress(),
 
-            getTokenBalance: async function(tokenAddress){
+            getBalanceForToken: async function(tokenAddress){
                 new ethers.Contract(
                     tokenAddress,
                     ERC20TokenABI,
