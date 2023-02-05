@@ -1,7 +1,11 @@
 const
     normalizeAmounts = (decimals, amounts) =>
         amounts.map(
-            amount => parseInt( parseFloat(amount) * Math.pow(10, decimals)),
+            amount =>
+                parseInt(
+                    parseFloat(amount) * Math.pow(10, decimals),
+                )
+                    .toString(),
         ),
 
     csvTextToBatchSendArgument =
@@ -21,7 +25,7 @@ const
                     )
             return {
                 recipients: rawArgument.recipients,
-                amounts: normalizeAmounts(decimals, rawArgument.amounts)
+                amounts: normalizeAmounts(decimals, rawArgument.amounts),
             }
         }
 
