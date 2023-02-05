@@ -11,6 +11,15 @@ const
         return ({
             getAddress: () => signer.getAddress(),
 
+            getTokenBalance: async function(tokenAddress){
+                new ethers.Contract(
+                    tokenAddress,
+                    ERC20TokenABI,
+                    signer,
+                )
+                    .balanceOf(await this.getAddress())
+            },
+
             approveAccount: ({
                 tokenAddress,
                 spenderAddress,
@@ -35,7 +44,10 @@ const
                         new ethers.Contract(tokenAddress, ERC20TokenABI, signer)
 
                 return tokenContract.allowance(ownerAddress, spenderAddress)
-            }
+            },
+
+            batchSend: () => {}, // TODO: Implement this
+            batchSendToken: () => {} // TODO: Implement this
         })
     }
 

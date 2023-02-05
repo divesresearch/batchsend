@@ -1,7 +1,9 @@
 module.exports = {
-    BatchSenderAddress : 'insert here',
+    BatchSenderAddressMapByChainID : {
+        '5' : '0x3262630A9744f84AA2F412BD41fc37fD86a3e25C' // goerli
+    },
 
-    BathSenderABI : [
+    BatchSenderABI : [
         'function batchSendToken(address tokenAddress, address[] recipients, uint256[] amounts) public returns (bool)',
         'function batchSend(address[] recipients, uint256[] amounts) public returns (bool)'
     ],
