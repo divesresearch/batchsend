@@ -22,13 +22,16 @@ const
             getAddress: () => signer.getAddress(),
 
             getBalanceForToken: async function(tokenAddress){
-                new ethers.Contract(
+                return new ethers.Contract(
                     tokenAddress,
                     ERC20TokenABI,
                     signer,
                 )
                     .balanceOf(await this.getAddress())
             },
+
+            getTokenDecimals: (tokenAddress) =>
+                (new ethers.Contract(tokenAddress, ERC20TokenABI, signer)).decimals(),
 
             approveAccount: ({
                 tokenAddress,
